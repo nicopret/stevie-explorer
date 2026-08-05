@@ -132,3 +132,75 @@ class TelemetryMessage(Enum):
         grafana_key="stevie_explorer.system.kernel.service_stop_failed",
         description="A service failed to stop cleanly."
     )
+
+    TARGET_CREATED = TelemetryMessageDefinition(
+        key="target.created",
+        level=TelemetryLevel.INFO,
+        category=TelemetryCategory.SESSION,
+        grafana_key="stevie_explorer.target.created",
+        description="An exploration target was created.",
+    )
+
+    SESSION_CREATED = TelemetryMessageDefinition(
+        key="session.created",
+        level=TelemetryLevel.INFO,
+        category=TelemetryCategory.SESSION,
+        grafana_key="stevie_explorer.session.created",
+        description="An exploration session was created.",
+    )
+
+    SESSION_CONNECTING = TelemetryMessageDefinition(
+        key="session.connecting",
+        level=TelemetryLevel.INFO,
+        category=TelemetryCategory.SESSION,
+        grafana_key="stevie_explorer.session.connecting",
+        description="An exploration session is connecting.",
+    )
+
+    SESSION_CONNECTED = TelemetryMessageDefinition(
+        key="session.connected",
+        level=TelemetryLevel.INFO,
+        category=TelemetryCategory.SESSION,
+        grafana_key="stevie_explorer.session.connected",
+        description="An exploration session connected.",
+    )
+
+    SESSION_DISCONNECTED = TelemetryMessageDefinition(
+        key="session.disconnected",
+        level=TelemetryLevel.INFO,
+        category=TelemetryCategory.SESSION,
+        grafana_key="stevie_explorer.session.disconnected",
+        description="An exploration session disconnected.",
+    )
+
+    SESSION_CONNECTION_FAILED = TelemetryMessageDefinition(
+        key="session.connection_failed",
+        level=TelemetryLevel.ERROR,
+        category=TelemetryCategory.SESSION,
+        grafana_key="stevie_explorer.session.connection_failed",
+        description="An exploration session failed to connect.",
+    )
+
+    TRANSPORT_MESSAGE_SENT = TelemetryMessageDefinition(
+        key="transport.message_sent",
+        level=TelemetryLevel.DEBUG,
+        category=TelemetryCategory.TRANSPORT,
+        grafana_key="stevie_explorer.transport.message_sent",
+        description="A protocol message was sent.",
+    )
+
+    TRANSPORT_MESSAGE_RECEIVED = TelemetryMessageDefinition(
+        key="transport.message_received",
+        level=TelemetryLevel.DEBUG,
+        category=TelemetryCategory.TRANSPORT,
+        grafana_key="stevie_explorer.transport.message_received",
+        description="A protocol message was received.",
+    )
+
+    TRANSPORT_RECEIVE_FAILED = TelemetryMessageDefinition(
+        key="transport.receive_failed",
+        level=TelemetryLevel.ERROR,
+        category=TelemetryCategory.TRANSPORT,
+        grafana_key="stevie_explorer.transport.receive_failed",
+        description="The transport receiver failed.",
+    )

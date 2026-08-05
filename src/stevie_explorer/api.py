@@ -15,6 +15,10 @@ from stevie_explorer.kernel import (
     BaseService,
     ExplorerKernel,
 )
+from stevie_explorer.routes import (
+    create_sessions_router,
+    create_targets_router
+)
 from stevie_explorer.telemetry import TelemetryService
 
 
@@ -48,6 +52,7 @@ class ApiService(BaseService):
         self._server_task: asyncio.Task[None] | None = None
 
         self._register_routes()
+        self._register_explorer_routes()
 
     async def start(self) -> None:
         configuration: Configuration = self.kernel.get(
@@ -112,6 +117,10 @@ class ApiService(BaseService):
 
         self._server = None
         self._server_task = None
+
+    def _register_explorer_routes(self) -> None:
+        self.app.include_router(create_targets_router(self.kernel))
+        self.app.include_router(create_sessions_router(self.kernel))
 
     def _register_routes(self) -> None:
         @self.app.get(

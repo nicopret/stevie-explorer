@@ -16,6 +16,7 @@ class ProbeMode(StrEnum):
 class CapabilityStatus(StrEnum):
     CONNECTION_CLOSED = "connection_closed"
     ERROR = "error"
+    NO_MATCH = "no_match"
     NO_RESPONSE = "no_response"
     REJECTED = "rejected"
     SUPPORTED = "supported"
@@ -33,9 +34,7 @@ class CapabilityProbe:
     timeout: float = 5.0
 
     expected_event: str | None = None
-
     description: str | None = None
-
     tags: tuple[str, ...] = ()
 
     probe_instance_id: str = field(default_factory=lambda: str(uuid4))
@@ -51,9 +50,17 @@ class CapabilityResult:
     
     response: Any | None = None
     error: str | None = None
-
     matched_event: str | None = None
 
-    result_id: str = field(default_factory=lambda: str(uuid4))
+    captures: tuple[ProbeCapture, ...] = ()
 
-    timestamp: datetime = field(default_factory=labda: datetime.now(UTC))
+    result_id: str = field(default_factory=lambda: str(uuid4()))
+
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+
+@dataclass(frozen=True, slots=True)
+class ProbeCapture:
+    payload_type: PayloadType
+    payload: Any
+
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))

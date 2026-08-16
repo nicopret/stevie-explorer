@@ -1,109 +1,29 @@
 from __future__ import annotations
 
 import asyncio
-
 from time import perf_counter
-from typing import Any
 
 from stevie_explorer.capabilities.models import (
     CapabilityProbe,
     CapabilityResult,
     CapabilityStatus,
-    ProbeMode
+    ProbeCapture,
+    ProbeMode,
 )
+from stevie_explorer.capture import CaptureService
 from stevie_explorer.identifiers import (
     MessageDirection,
     ServiceName,
-    SessionState
 )
-from stevie_explorer.sessions import CapturedMessage, SessionManager
+from stevie_explorer.kernel import BaseService, ExplorerKernel
+from stevie_explorer.sessions import SessionManager
+
 
 class CapabilityProbeService(BaseService):
     name = ServiceName.CAPABILITY_PROBE
 
-    def __init__(self, kernel: ExploreKernel) -> None:
+    def __init__(self, kernel: ExplorerKernel) -> None:
         self.kernel = kernel
-    
-    async def run(self,  target_id: str, probe: CapabilityProbe) -> CapabilityResult:
-        manager: SessionManager = self.kernel.get(ServiceName.SESSION_MANAGER)
-
-        session = await manager.create(target_id)
-        started = perf_counter()
-
-        try:
-            await manager.connect(session.session_id)
-
-            if session.state != SessionState.CONNECTED:
-                return self._result(
-                    target_id=target_id,
-                    probe=probe,
-                    status=CapabilityStatus.ERROR,
-                    started=started,
-                    error=(
-                        session.error or "Session did not reach connected state"
-                    )
-                )
-            
-            await manager.send(
-                session_id=session.session_id,
-                payload_type=probe.payload_type,
-                payload=probe.payload
-            )
-
-            if probe.mode == ProbeMode.SEND_ONLY:
-                return self.result(
-                    target_id=target_id,
-                    probe=probe,
-                    status=CapabilityStatus.SUPPORTED,
-                    started=started
-                )
-
-            message = await self._wait_for_response(
-                manager=manager,
-                session_id=session.session_id,
-                probe=probe
-            )
-
-            if message is None:
-                return self._result(
-                    target_id=target_id,
-                    probe=probe,
-                    status=CapabilityStatus.NO_RESPONSE,
-                    started=started
-                )
-            
-            return self._result(
-                target_id=target_id,
-                probe=probe,
-                status=CapabilityStatus.SUPPORTED,
-                started=started,
-                response=message.payload,
-                matched_event=self._extract_event(message.payload)
-            )
-
-        except ConnectionError as exc:
-            return self._result(
-                target_id=target_id,
-                probe=probe,
-                status=CapabilityStatus.CONNECTION_CLOSED,
-                started=started,
-                error=str(exc)
-            )
-        
-        except Exception exc:
-            return self._result(
-                target_id=target_id,
-                probe=probe,
-                status=CapabilityStatus.ERROR,
-                started=started,
-                error=str(exc)
-            )
-        
-        finally:
-            try:
-                await manager.disconnect(session.session_id)
-            except Exception:
-                pass
 
     async def start(self) -> None:
         pass
@@ -111,79 +31,150 @@ class CapabilityProbeService(BaseService):
     async def stop(self) -> None:
         pass
 
-    @staticmethod
-    def _extract_event(payload: Any) -> str | None:
-        if not isinstance(payload, dict):
-            return None
-        
-        event = payload.get("event")
-
-        if isinstance(event, str):
-            return event
-        
-        return None
-    
-    @staticmethod
-    def _result(
+    async def run(
+        self,
         target_id: str,
         probe: CapabilityProbe,
-        status: CapabilityStatus,
-        started: float,
-        response: Any | None = None,
-        error: str | None = None,
-        matched_event: str | None = None
     ) -> CapabilityResult:
-        duration_ms = (perf_counter() - started) * 1000
-
-        return CapabilityResult(
-            target_id=target_id,
-            probe_id=probe.probe_id,
-            probe_name=probe.name,
-            status=status,
-            duration_ms=duration_ms,
-            response=response,
-            error=error,
-            matched_event=matched_event
+        session_manager: SessionManager = self.kernel.get(
+            ServiceName.SESSION_MANAGER
         )
 
-    def _matches_probe(
-        self,
-        payload: Any,
-        probe: CapabilityProbe
-    ) -> bool:
-        if probe.expected_event is None:
-            return False
-        
-        if not isinstance(payload, dict):
-            return False
-        
-        return payload.get("event") == probe.expected_event
+        capture_service: CaptureService = self.kernel.get(
+            ServiceName.CAPTURE
+        )
 
-    async def _wait_for_response(
-        self,
-        manager: SessionManager,
-        session_id: str,
-        probe: CapabilityProbe
-    ) -> CapturedMessage | None:
-        deadline = asyncio.get_running_loop().time() + probe.timeout
+        started = perf_counter()
 
-        while asyncio.get_running_loop().time() < deadline:
-            messages = manager.messages(session_id)
+        session = await session_manager.create(target_id)
 
-            for message in reverse(messages):
-                if message.direction != MessageDirection.INBOUND:
-                    continue
-                
-                if probe.mode == ProbeMode.EXPECT_RESPONSE:
-                    return message
-                
-                if probe.mode == ProbeMode.EXPECT_MATCH:
-                    if self._matches_probe(
-                        message.payload,
-                        probe
-                    ):
-                        return message
-            
-            await asyncio.sleep(0.05)
+        try:
+            await session_manager.connect(
+                session.session_id
+            )
+
+            # Start recording immediately BEFORE sending
+            # the actual probe request.
+            capture = capture_service.start_capture(
+                session.session_id
+            )
+
+            await session_manager.send(
+                session_id=session.session_id,
+                payload_type=probe.payload_type,
+                payload=probe.payload,
+            )
+
+            if probe.mode != ProbeMode.SEND_ONLY:
+                await asyncio.sleep(probe.timeout)
+
+            capture = capture_service.stop_capture(
+                capture.capture_id
+            )
+
+            inbound_messages = [
+                message
+                for message in capture.messages
+                if message.direction
+                == MessageDirection.INBOUND
+            ]
+
+            captures = tuple(
+                ProbeCapture(
+                    payload_type=message.payload_type,
+                    payload=message.payload,
+                    timestamp=message.timestamp,
+                )
+                for message in inbound_messages
+            )
+
+            status = CapabilityStatus.SUPPORTED
+            response = None
+            matched_event = None
+
+            if probe.mode == ProbeMode.SEND_ONLY:
+                status = CapabilityStatus.SUPPORTED
+
+            elif probe.mode == ProbeMode.EXPECT_RESPONSE:
+                if inbound_messages:
+                    status = CapabilityStatus.SUPPORTED
+                    response = inbound_messages[0].payload
+                else:
+                    status = CapabilityStatus.NO_RESPONSE
+
+            elif probe.mode == ProbeMode.EXPECT_MATCH:
+                matched_message = self._find_match(
+                    inbound_messages,
+                    probe.expected_event,
+                )
+
+                if matched_message is not None:
+                    status = CapabilityStatus.SUPPORTED
+                    response = matched_message.payload
+                    matched_event = probe.expected_event
+
+                elif inbound_messages:
+                    status = CapabilityStatus.NO_MATCH
+
+                else:
+                    status = CapabilityStatus.NO_RESPONSE
+
+            duration_ms = (
+                perf_counter() - started
+            ) * 1000
+
+            return CapabilityResult(
+                target_id=target_id,
+                probe_id=probe.probe_id,
+                probe_name=probe.name,
+                status=status,
+                duration_ms=duration_ms,
+                response=response,
+                error=None,
+                matched_event=matched_event,
+                captures=captures,
+            )
+
+        except Exception as exc:
+            duration_ms = (
+                perf_counter() - started
+            ) * 1000
+
+            return CapabilityResult(
+                target_id=target_id,
+                probe_id=probe.probe_id,
+                probe_name=probe.name,
+                status=CapabilityStatus.ERROR,
+                duration_ms=duration_ms,
+                response=None,
+                error=str(exc),
+                matched_event=None,
+                captures=(),
+            )
+
+        finally:
+            try:
+                await session_manager.disconnect(
+                    session.session_id
+                )
+            except Exception:
+                pass
+
+    @staticmethod
+    def _find_match(
+        messages,
+        expected_event: str | None,
+    ):
+        if expected_event is None:
+            return None
+
+        for message in messages:
+            payload = message.payload
+
+            if not isinstance(payload, dict):
+                continue
+
+            if payload.get("event") == expected_event:
+                return message
 
         return None

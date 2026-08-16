@@ -2,6 +2,7 @@ import asyncio
 
 from stevie_explorer.api import ApiService
 from stevie_explorer.capabilities import CapabilityProbeService
+from stevie_explorer.capture import CaptureService
 from stevie_explorer.config import Configuration
 from stevie_explorer.eventbus import EventBus
 from stevie_explorer.kernel import ExplorerKernel
@@ -19,11 +20,13 @@ async def main() -> None:
     
     api = ApiService(kernel)
     capability_probe = CapabilityProbeService(kernel)
+    capture_service = CaptureService(kernel)
     session_manager = SessionManager(kernel)
     target_registry = TargetRegistry(kernel)
 
     kernel.register(api)
     kernel.register(capability_probe)
+    kernel.register(capture_service)
     kernel.register(configuration)
     kernel.register(eventbus)
     kernel.register(target_registry)

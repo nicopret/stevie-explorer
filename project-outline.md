@@ -192,10 +192,13 @@ Example:
 {
   "id": "living_room_tv",
   "name": "Samsung AU8000",
-  "host": "192.168.50.232",
+  "device_id": "193a3333-85b9-59cc-8fac-a38c551040f7",
   "tags": ["television", "samsung", "tizen"]
 }
 ```
+
+The network address is resolved at connection time from the shared device
+registry. It must not be copied into target or probe source code.
 
 ---
 

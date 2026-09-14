@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pathlib import Path
 
 from stevie_explorer.identifiers import ServiceName
 from stevie_explorer.kernel import BaseComponent
@@ -14,6 +15,9 @@ class ExplorerSettings(BaseSettings):
 
     api_host: str = "127.0.0.1"
     api_port: int = 8100
+    device_registry_path: Path = Path("config/devices.json")
+    capabilities_file: Path = Path("config/capabilities.json")
+    device_registry_poll_interval: float = 1.0
 
 class Configuration(BaseComponent):
     name = ServiceName.CONFIGURATION

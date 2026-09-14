@@ -1,0 +1,48 @@
+{
+  "version": 7,
+  "devices": [
+    {
+      "id": "193a3333-85b9-59cc-8fac-a38c551040f7",
+      "device_name": "samsung_au8000",
+      "display_name": "Samsung TV",
+      "ip_address": "192.168.50.180",
+      "targets": [
+        {
+          "name": "samsung.remote.control",
+          "display_name": "Samsung Remote Control",
+          "transport": null,
+          "uri": null,
+          "device_id": "193a3333-85b9-59cc-8fac-a38c551040f7",
+          "scheme": null,
+          "port": null,
+          "path": "",
+          "query": {},
+          "target_id": "42a6bf2e-9506-4665-bb74-3461879909f8",
+          "headers": {},
+          "tags": [],
+          "created_at": "2026-09-10T20:56:58.160030Z"
+        },
+        {
+          "name": "samsung.api.v2",
+          "display_name": "Samsung API v2",
+          "transport": null,
+          "uri": null,
+          "device_id": "193a3333-85b9-59cc-8fac-a38c551040f7",
+          "scheme": null,
+          "port": null,
+          "path": "",
+          "query": {},
+          "target_id": "298ff642-add6-4c1b-8d42-1ffbfff5f63e",
+          "headers": {},
+          "tags": [],
+          "created_at": "2026-09-10T20:57:20.309643Z"
+        }
+      ],
+      "authentication": {
+        "samsung": {
+          "token": "15534902"
+        }
+      }
+    }
+  ]
+}

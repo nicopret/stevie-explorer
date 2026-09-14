@@ -17,6 +17,7 @@ from stevie_explorer.kernel import (
 )
 from stevie_explorer.routes import (
     create_capabilities_router,
+    create_devices_router,
     create_sessions_router,
     create_targets_router
 )
@@ -121,6 +122,7 @@ class ApiService(BaseService):
 
     def _register_explorer_routes(self) -> None:
         self.app.include_router(create_capabilities_router(self.kernel))
+        self.app.include_router(create_devices_router(self.kernel))
         self.app.include_router(create_targets_router(self.kernel))
         self.app.include_router(create_sessions_router(self.kernel))
 

@@ -20,5 +20,5 @@ class Capture:
     messages: list[CapturedMessage] = field(default_factory=list)
 
     @property
-    def is_recorded(self) -> bool:
+    def is_recording(self) -> bool:
         return self.stopped_at is None

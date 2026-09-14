@@ -19,6 +19,7 @@ class TelemetryCategory(StrEnum):
     SESSION = "session"
     SYSTEM = "system"
     TRANSPORT = "transport"
+    DEVICE = "device"
 
 @dataclass(frozen=True, slots=True)
 class TelemetryMessageDefinition:
@@ -29,6 +30,91 @@ class TelemetryMessageDefinition:
     description: str
 
 class TelemetryMessage(Enum):
+    DEVICE_REGISTRY_LOADED = TelemetryMessageDefinition(
+        key="device.registry_loaded", level=TelemetryLevel.INFO,
+        category=TelemetryCategory.DEVICE,
+        grafana_key="stevie_explorer.device.registry_loaded",
+        description="The shared device registry was loaded.",
+    )
+    DEVICE_CREATED = TelemetryMessageDefinition(
+        key="device.created", level=TelemetryLevel.INFO,
+        category=TelemetryCategory.DEVICE,
+        grafana_key="stevie_explorer.device.created",
+        description="A device was created.",
+    )
+    DEVICE_UPDATED = TelemetryMessageDefinition(
+        key="device.updated", level=TelemetryLevel.INFO,
+        category=TelemetryCategory.DEVICE,
+        grafana_key="stevie_explorer.device.updated",
+        description="A device was updated.",
+    )
+    DEVICE_REMOVED = TelemetryMessageDefinition(
+        key="device.removed", level=TelemetryLevel.INFO,
+        category=TelemetryCategory.DEVICE,
+        grafana_key="stevie_explorer.device.removed",
+        description="A device was removed.",
+    )
+    DEVICE_REGISTRY_RELOAD_DETECTED = TelemetryMessageDefinition(
+        key="device.registry_reload_detected", level=TelemetryLevel.INFO,
+        category=TelemetryCategory.DEVICE,
+        grafana_key="stevie_explorer.device.registry_reload_detected",
+        description="A changed shared device registry was loaded.",
+    )
+    DEVICE_REGISTRY_RELOAD_FAILED = TelemetryMessageDefinition(
+        key="device.registry_reload_failed", level=TelemetryLevel.ERROR,
+        category=TelemetryCategory.DEVICE,
+        grafana_key="stevie_explorer.device.registry_reload_failed",
+        description="The shared device registry could not be reloaded.",
+    )
+    DEVICE_CONNECTION_RECONNECTING = TelemetryMessageDefinition(
+        key="device.connection_reconnecting", level=TelemetryLevel.INFO,
+        category=TelemetryCategory.DEVICE,
+        grafana_key="stevie_explorer.device.connection_reconnecting",
+        description="A device session is reconnecting after an address change.",
+    )
+    DEVICE_CONNECTION_RECONNECTED = TelemetryMessageDefinition(
+        key="device.connection_reconnected", level=TelemetryLevel.INFO,
+        category=TelemetryCategory.DEVICE,
+        grafana_key="stevie_explorer.device.connection_reconnected",
+        description="A device session reconnected after an address change.",
+    )
+    DEVICE_CONNECTION_RECONNECT_FAILED = TelemetryMessageDefinition(
+        key="device.connection_reconnect_failed", level=TelemetryLevel.ERROR,
+        category=TelemetryCategory.DEVICE,
+        grafana_key="stevie_explorer.device.connection_reconnect_failed",
+        description="A device session failed to reconnect after an address change.",
+    )
+    CAPABILITY_PROBE_STARTED = TelemetryMessageDefinition(
+        key="capability.probe_started", level=TelemetryLevel.INFO,
+        category=TelemetryCategory.DISCOVERY,
+        grafana_key="stevie_explorer.capability.probe_started",
+        description="A capability probe started.",
+    )
+    CAPABILITY_PROBE_COMPLETED = TelemetryMessageDefinition(
+        key="capability.probe_completed", level=TelemetryLevel.INFO,
+        category=TelemetryCategory.DISCOVERY,
+        grafana_key="stevie_explorer.capability.probe_completed",
+        description="A capability probe completed.",
+    )
+    CAPABILITY_PROBE_FAILED = TelemetryMessageDefinition(
+        key="capability.probe_failed", level=TelemetryLevel.ERROR,
+        category=TelemetryCategory.DISCOVERY,
+        grafana_key="stevie_explorer.capability.probe_failed",
+        description="A capability probe failed.",
+    )
+    PROBE_PACK_STARTED = TelemetryMessageDefinition(
+        key="capability.probe_pack_started", level=TelemetryLevel.INFO,
+        category=TelemetryCategory.DISCOVERY,
+        grafana_key="stevie_explorer.capability.probe_pack_started",
+        description="A capability probe pack started.",
+    )
+    PROBE_PACK_COMPLETED = TelemetryMessageDefinition(
+        key="capability.probe_pack_completed", level=TelemetryLevel.INFO,
+        category=TelemetryCategory.DISCOVERY,
+        grafana_key="stevie_explorer.capability.probe_pack_completed",
+        description="A capability probe pack completed.",
+    )
+
     API_STARTING = TelemetryMessageDefinition(
         key="api.starting",
         level=TelemetryLevel.INFO,

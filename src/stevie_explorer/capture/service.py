@@ -34,7 +34,7 @@ class CaptureService(BaseService):
 
         return capture
 
-    def _stop_capture(self, capture_id: str) -> Capture:
+    def stop_capture(self, capture_id: str) -> Capture:
         capture = self.get(capture_id)
 
         if not capture.is_recording:
@@ -42,7 +42,9 @@ class CaptureService(BaseService):
         
         messages = self._session_manager.messages(capture.session_id)
 
-        capture.messages.extend(messages[capture.start_index])
+        new_messages = messages[capture.start_index:]
+
+        capture.messages.extend(new_messages)
 
         self._stop_capture(capture)
 
@@ -64,7 +66,7 @@ class CaptureService(BaseService):
             session_messages = (
                 self._session_manager.messages(capture.session_id)
             )
-            return session_messages[capture.start_index]
+            return list(session_messages[capture.start_index:])
 
         return list(capture.messages)
     

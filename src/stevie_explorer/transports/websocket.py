@@ -3,8 +3,6 @@ from __future__ import annotations
 import asyncio
 import json
 import ssl
-from typing import Any
-
 from websockets.asyncio.client import ClientConnection, connect
 from websockets.exceptions import ConnectionClosed
 
@@ -25,6 +23,7 @@ class WebSocketTransport(BaseTransport):
     transport_type = TransportType.WEBSOCKET
 
     def __init__(self) -> None:
+        self.logger = None
         self._connection: ClientConnection | None = None
         self._receiver_task: asyncio.Task[None] | None = None
         self._on_message: MessageHandler | None = None
@@ -61,6 +60,7 @@ class WebSocketTransport(BaseTransport):
             target.uri,
             ssl=ssl_context,
             additional_headers=target.headers or None,
+            logger=self.logger,
             ping_interval=20,
             ping_timeout=20,
         )
@@ -90,16 +90,16 @@ class WebSocketTransport(BaseTransport):
         self._connection = None
         self._receiver_task = None
 
-        if connection is not None:
-            await connection.close()
-
-        if receiver_task is not None:
-            receiver_task.cancel()
-
-            try:
-                await receiver_task
-            except asyncio.CancelledError:
-                pass
+        try:
+            if connection is not None:
+                await connection.close()
+        finally:
+            if receiver_task is not None:
+                receiver_task.cancel()
+                try:
+                    await receiver_task
+                except asyncio.CancelledError:
+                    pass
 
     async def _receive_loop(self) -> None:
         connection = self._connection
@@ -113,12 +113,15 @@ class WebSocketTransport(BaseTransport):
                     await self._on_message(
                         self._deserialize(raw_message)
                     )
+            if self._connection is connection and self._on_error is not None:
+                await self._on_error(ConnectionError("WebSocket connection closed"))
 
         except asyncio.CancelledError:
             raise
 
         except ConnectionClosed:
-            return
+            if self._connection is connection and self._on_error is not None:
+                await self._on_error(ConnectionError("WebSocket connection closed"))
 
         except Exception as exc:
             if self._on_error is not None:

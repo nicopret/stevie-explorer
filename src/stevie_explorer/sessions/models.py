@@ -18,9 +18,9 @@ class CapturedMessage:
     payload_type: PayloadType
     payload: Any
 
-    message_id: str = field(
-        default_factory=lambda: datetime.now(UTC)
-    )
+    message_id: str = field(default_factory=lambda: str(uuid4()))
+
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 @dataclass(slots=True)
 class ExplorerSession:

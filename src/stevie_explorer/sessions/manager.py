@@ -9,7 +9,8 @@ from stevie_explorer.identifiers import (
     ServiceName,
     SessionState,
     TelemetryMessage,
-    TransportType
+    TransportType,
+    Topic,
 )
 from stevie_explorer.kernel import (
     BaseService,
@@ -26,6 +27,8 @@ from stevie_explorer.transports import (
     TransportPayload,
     WebSocketTransport
 )
+from stevie_explorer.eventbus import EventBus
+from stevie_explorer.events import ExplorerEvent
 
 class SessionManager(BaseService):
     name = ServiceName.SESSION_MANAGER
@@ -34,7 +37,8 @@ class SessionManager(BaseService):
         self.kernel = kernel
 
         self._sessions: dict[str, ExplorerSession] = {}
-        self._transports: dict[str, BaseService] = {}
+        self._transports: dict[str, BaseTransport] = {}
+        self._reconnecting: set[str] = set()
 
     def get(self, session_id: str) -> ExplorerSession:
         try:
@@ -64,7 +68,7 @@ class SessionManager(BaseService):
             ServiceName.TARGET_REGISTRY
         )
 
-        target = targets.get(session.target_id)
+        target = targets.resolve(session.target_id)
         telemetry = self._telemetry()
 
         session.state = SessionState.CONNECTING
@@ -101,7 +105,7 @@ class SessionManager(BaseService):
             )
 
         async def on_error(error: Exception) -> None:
-            session.sate = SessionState.FAILED
+            session.state = SessionState.FAILED
             session.error = str(error)
 
             await telemetry.emit(
@@ -233,9 +237,12 @@ class SessionManager(BaseService):
         return message
 
     async def start(self) -> None:
-        pass
+        eventbus: EventBus = self.kernel.get(ServiceName.EVENTBUS)
+        eventbus.subscribe(Topic.DEVICE_UPDATED, self._on_device_updated)
 
     async def stop(self) -> None:
+        eventbus: EventBus = self.kernel.get(ServiceName.EVENTBUS)
+        eventbus.unsubscribe(Topic.DEVICE_UPDATED, self._on_device_updated)
         for session_id in tuple(self._sessions):
             session = self._sessions[session_id]
 
@@ -244,6 +251,42 @@ class SessionManager(BaseService):
                 SessionState.CONNECTED
             }:
                 await self.disconnect(session_id)
+
+    async def _on_device_updated(self, event: ExplorerEvent) -> None:
+        before = event.payload.get("before") or {}
+        after = event.payload.get("after") or {}
+        if before.get("ip_address") == after.get("ip_address"):
+            return
+
+        targets: TargetRegistry = self.kernel.get(ServiceName.TARGET_REGISTRY)
+        device_id = event.payload["device_id"]
+        session_ids = [
+            session.session_id
+            for session in self._sessions.values()
+            if session.state == SessionState.CONNECTED
+            and str(targets.get(session.target_id).device_id) == device_id
+            and session.session_id not in self._reconnecting
+        ]
+        for session_id in session_ids:
+            self._reconnecting.add(session_id)
+            try:
+                await self._telemetry().emit(
+                    TelemetryMessage.DEVICE_CONNECTION_RECONNECTING,
+                    source=self.name, session_id=session_id, device_id=device_id,
+                )
+                await self.disconnect(session_id)
+                await self.connect(session_id)
+                await self._telemetry().emit(
+                    TelemetryMessage.DEVICE_CONNECTION_RECONNECTED,
+                    source=self.name, session_id=session_id, device_id=device_id,
+                )
+            except Exception as exc:
+                await self._telemetry().emit(
+                    TelemetryMessage.DEVICE_CONNECTION_RECONNECT_FAILED,
+                    source=self.name, session_id=session_id, device_id=device_id, error=str(exc),
+                )
+            finally:
+                self._reconnecting.discard(session_id)
 
     def _create_transport(self, transport_type: TransportType) -> BaseTransport:
         if transport_type == TransportType.WEBSOCKET:

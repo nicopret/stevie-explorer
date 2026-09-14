@@ -5,6 +5,7 @@ class ServiceName(StrEnum):
         CAPABILITY_PROBE = "capability_probe"
         CAPTURE = "Capture"
         CONFIGURATION = "configuration"
+        DEVICE_REGISTRY = "device_registry"
         EVENTBUS = "eventbus"
         TARGET_REGISTRY = "target_registry"
         TELEMETRY = "telemetry"

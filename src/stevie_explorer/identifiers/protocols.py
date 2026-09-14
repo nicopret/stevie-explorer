@@ -18,4 +18,5 @@ class PayloadType(StrEnum):
     TEXT = "text"
 
 class TransportType(StrEnum):
+    HTTP = "http"
     WEBSOCKET = "websocket"

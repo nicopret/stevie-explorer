@@ -1,0 +1,227 @@
+{
+  "version": 1,
+  "devices": {
+    "193a3333-85b9-59cc-8fac-a38c551040f7": {
+      "targets": {
+        "42a6bf2e-9506-4665-bb74-3461879909f8": {
+          "capabilities": {
+            "remote.key": {
+              "commands": {
+                "KEY_HOME": {
+                  "key": "KEY_HOME",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:38.246531Z",
+                  "duration_ms": 201.47570001427084,
+                  "error": null
+                },
+                "KEY_RETURN": {
+                  "key": "KEY_RETURN",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:38.849441Z",
+                  "duration_ms": 201.4846809906885,
+                  "error": null
+                },
+                "KEY_ENTER": {
+                  "key": "KEY_ENTER",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:39.451998Z",
+                  "duration_ms": 201.33331196848303,
+                  "error": null
+                },
+                "KEY_UP": {
+                  "key": "KEY_UP",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:40.053925Z",
+                  "duration_ms": 201.3186090043746,
+                  "error": null
+                },
+                "KEY_DOWN": {
+                  "key": "KEY_DOWN",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:40.656683Z",
+                  "duration_ms": 201.41851500375196,
+                  "error": null
+                },
+                "KEY_LEFT": {
+                  "key": "KEY_LEFT",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:41.259277Z",
+                  "duration_ms": 201.29020203603432,
+                  "error": null
+                },
+                "KEY_RIGHT": {
+                  "key": "KEY_RIGHT",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:41.862206Z",
+                  "duration_ms": 202.32717104954645,
+                  "error": null
+                },
+                "KEY_VOLUP": {
+                  "key": "KEY_VOLUP",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:42.465660Z",
+                  "duration_ms": 202.32826395658776,
+                  "error": null
+                },
+                "KEY_VOLDOWN": {
+                  "key": "KEY_VOLDOWN",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:43.069503Z",
+                  "duration_ms": 202.21521001076326,
+                  "error": null
+                },
+                "KEY_MUTE": {
+                  "key": "KEY_MUTE",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:43.672249Z",
+                  "duration_ms": 201.56269799917936,
+                  "error": null
+                },
+                "KEY_CHUP": {
+                  "key": "KEY_CHUP",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:44.275922Z",
+                  "duration_ms": 202.28498696815223,
+                  "error": null
+                },
+                "KEY_CHDOWN": {
+                  "key": "KEY_CHDOWN",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:44.879164Z",
+                  "duration_ms": 202.52729899948463,
+                  "error": null
+                },
+                "KEY_PLAY": {
+                  "key": "KEY_PLAY",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:45.481858Z",
+                  "duration_ms": 201.5769950230606,
+                  "error": null
+                },
+                "KEY_PAUSE": {
+                  "key": "KEY_PAUSE",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:46.085641Z",
+                  "duration_ms": 202.12046900996938,
+                  "error": null
+                },
+                "KEY_STOP": {
+                  "key": "KEY_STOP",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:46.689510Z",
+                  "duration_ms": 202.37418898614123,
+                  "error": null
+                },
+                "KEY_FF": {
+                  "key": "KEY_FF",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:47.293039Z",
+                  "duration_ms": 202.29470799677074,
+                  "error": null
+                },
+                "KEY_REWIND": {
+                  "key": "KEY_REWIND",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:47.896913Z",
+                  "duration_ms": 202.37926300615072,
+                  "error": null
+                },
+                "KEY_SOURCE": {
+                  "key": "KEY_SOURCE",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:48.499935Z",
+                  "duration_ms": 201.5765309915878,
+                  "error": null
+                },
+                "KEY_GUIDE": {
+                  "key": "KEY_GUIDE",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:49.103811Z",
+                  "duration_ms": 202.59409403661266,
+                  "error": null
+                },
+                "KEY_INFO": {
+                  "key": "KEY_INFO",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:49.707038Z",
+                  "duration_ms": 202.33087497763336,
+                  "error": null
+                },
+                "KEY_0": {
+                  "key": "KEY_0",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:50.310837Z",
+                  "duration_ms": 202.21339398995042,
+                  "error": null
+                },
+                "KEY_1": {
+                  "key": "KEY_1",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:50.913955Z",
+                  "duration_ms": 201.58225297927856,
+                  "error": null
+                },
+                "KEY_2": {
+                  "key": "KEY_2",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:51.516836Z",
+                  "duration_ms": 201.49218098958954,
+                  "error": null
+                },
+                "KEY_3": {
+                  "key": "KEY_3",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:52.120433Z",
+                  "duration_ms": 202.14083895552903,
+                  "error": null
+                },
+                "KEY_4": {
+                  "key": "KEY_4",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:52.724182Z",
+                  "duration_ms": 202.14022899745032,
+                  "error": null
+                },
+                "KEY_5": {
+                  "key": "KEY_5",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:53.327807Z",
+                  "duration_ms": 202.34446704853326,
+                  "error": null
+                },
+                "KEY_6": {
+                  "key": "KEY_6",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:53.931579Z",
+                  "duration_ms": 202.35252199927345,
+                  "error": null
+                },
+                "KEY_7": {
+                  "key": "KEY_7",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:54.534562Z",
+                  "duration_ms": 201.86265697702765,
+                  "error": null
+                },
+                "KEY_8": {
+                  "key": "KEY_8",
+                  "status": "supported",
+                  "last_checked": "2026-09-13T21:29:55.138157Z",
+                  "duration_ms": 202.20707898261026,
+                  "error": null
+                },
+                "KEY_9": {
+                  "key": "KEY_9",
+                  "status": "supported",
+                  "last_checked": "2026-09-14T19:22:49.990836Z",
+                  "duration_ms": 201.49220700841397,
+                  "error": null
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
